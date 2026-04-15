@@ -1,0 +1,56 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "nome": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "fotoPerfil": { "type": "string" },
+        "dataCriacao": { "type": "string", "format": "date-time" },
+        "role": { "type": "string", "enum": ["user", "admin"] }
+      },
+      "required": ["uid", "nome", "email", "dataCriacao", "role"]
+    },
+    "Item": {
+      "title": "Item",
+      "description": "App content item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "titulo": { "type": "string" },
+        "descricao": { "type": "string" },
+        "imagem": { "type": "string" },
+        "criadoPor": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "titulo", "criadoPor", "timestamp"]
+    },
+    "Config": {
+      "title": "Config",
+      "description": "App configuration",
+      "type": "object",
+      "properties": {
+        "minVersion": { "type": "string" },
+        "maintenanceMode": { "type": "boolean" }
+      },
+      "required": ["minVersion", "maintenanceMode"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": { "$ref": "User" },
+      "description": "User profiles"
+    },
+    "/items/{itemId}": {
+      "schema": { "$ref": "Item" },
+      "description": "App content items"
+    },
+    "/config/app": {
+      "schema": { "$ref": "Config" },
+      "description": "App configuration"
+    }
+  }
+}
