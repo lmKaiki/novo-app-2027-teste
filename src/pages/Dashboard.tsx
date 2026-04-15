@@ -5,11 +5,14 @@ import ServerSidebar from '../components/ServerSidebar';
 import ChannelSidebar from '../components/ChannelSidebar';
 import ChatArea from '../components/ChatArea';
 import MemberSidebar from '../components/MemberSidebar';
+import { Server, Channel } from '../types';
 
 export default function Dashboard() {
   const [maintenance, setMaintenance] = useState(false);
   const [minVersion, setMinVersion] = useState('1.0.0');
   const [loading, setLoading] = useState(true);
+  const [activeServer, setActiveServer] = useState<Server | null>(null);
+  const [activeChannel, setActiveChannel] = useState<Channel | null>(null);
 
   useEffect(() => {
     const checkConfig = async () => {
@@ -24,6 +27,10 @@ export default function Dashboard() {
     checkConfig();
   }, []);
 
+  useEffect(() => {
+    setActiveChannel(null); // Reset channel when server changes
+  }, [activeServer]);
+
   if (loading) return <div className="text-white">Carregando...</div>;
   if (maintenance) return <div className="text-white text-center mt-20">Modo de Manutenção Ativo.</div>;
   
@@ -32,10 +39,25 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen bg-[#0F1117] text-white">
-      <ServerSidebar />
-      <ChannelSidebar />
-      <ChatArea />
-      <MemberSidebar />
+      <ServerSidebar onSelectServer={setActiveServer} activeServerId={activeServer?.id || null} />
+      {activeServer && (
+        <>
+          <ChannelSidebar serverId={activeServer.id} onSelectChannel={setActiveChannel} activeChannelId={activeChannel?.id || null} />
+          {activeChannel ? (
+            <ChatArea serverId={activeServer.id} channelId={activeChannel.id} />
+          ) : (
+            <div className="flex-1 flex items-center justify-center text-[#b5bac1]">
+              Selecione um canal para começar.
+            </div>
+          )}
+          <MemberSidebar serverId={activeServer.id} />
+        </>
+      )}
+      {!activeServer && (
+        <div className="flex-1 flex items-center justify-center text-[#b5bac1]">
+          Selecione um servidor para começar.
+        </div>
+      )}
     </div>
   );
 }

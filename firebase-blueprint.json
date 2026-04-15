@@ -9,48 +9,91 @@
         "nome": { "type": "string" },
         "email": { "type": "string", "format": "email" },
         "fotoPerfil": { "type": "string" },
-        "dataCriacao": { "type": "string", "format": "date-time" },
-        "role": { "type": "string", "enum": ["user", "admin"] }
+        "dataCriacao": { "type": "string", "format": "date-time" }
       },
-      "required": ["uid", "nome", "email", "dataCriacao", "role"]
+      "required": ["uid", "nome", "email", "dataCriacao"]
     },
-    "Item": {
-      "title": "Item",
-      "description": "App content item",
+    "Server": {
+      "title": "Server",
+      "description": "Discord-like server",
       "type": "object",
       "properties": {
         "id": { "type": "string" },
-        "titulo": { "type": "string" },
-        "descricao": { "type": "string" },
-        "imagem": { "type": "string" },
-        "criadoPor": { "type": "string" },
-        "timestamp": { "type": "string", "format": "date-time" }
+        "nome": { "type": "string" },
+        "ownerId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
       },
-      "required": ["id", "titulo", "criadoPor", "timestamp"]
+      "required": ["id", "nome", "ownerId", "createdAt"]
     },
-    "Config": {
-      "title": "Config",
-      "description": "App configuration",
+    "Channel": {
+      "title": "Channel",
+      "description": "Server channel",
       "type": "object",
       "properties": {
-        "minVersion": { "type": "string" },
-        "maintenanceMode": { "type": "boolean" }
+        "id": { "type": "string" },
+        "serverId": { "type": "string" },
+        "nome": { "type": "string" },
+        "type": { "type": "string", "enum": ["text", "voice"] }
       },
-      "required": ["minVersion", "maintenanceMode"]
+      "required": ["id", "serverId", "nome", "type"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "Chat message",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "channelId": { "type": "string" },
+        "userId": { "type": "string" },
+        "text": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "channelId", "userId", "text", "createdAt"]
+    },
+    "Role": {
+      "title": "Role",
+      "description": "Server role with permissions",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "serverId": { "type": "string" },
+        "nome": { "type": "string" },
+        "permissions": { "type": "object" }
+      },
+      "required": ["id", "serverId", "nome", "permissions"]
+    },
+    "Member": {
+      "title": "Member",
+      "description": "Server member",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "serverId": { "type": "string" },
+        "userId": { "type": "string" },
+        "roleId": { "type": "string" }
+      },
+      "required": ["id", "serverId", "userId"]
+    },
+    "Event": {
+      "title": "Event",
+      "description": "Server event",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "serverId": { "type": "string" },
+        "titulo": { "type": "string" },
+        "data": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "serverId", "titulo", "data"]
     }
   },
   "firestore": {
-    "/users/{uid}": {
-      "schema": { "$ref": "User" },
-      "description": "User profiles"
-    },
-    "/items/{itemId}": {
-      "schema": { "$ref": "Item" },
-      "description": "App content items"
-    },
-    "/config/app": {
-      "schema": { "$ref": "Config" },
-      "description": "App configuration"
-    }
+    "/users/{uid}": { "schema": { "$ref": "User" }, "description": "User profiles" },
+    "/servers/{serverId}": { "schema": { "$ref": "Server" }, "description": "Servers" },
+    "/servers/{serverId}/channels/{channelId}": { "schema": { "$ref": "Channel" }, "description": "Channels" },
+    "/servers/{serverId}/messages/{messageId}": { "schema": { "$ref": "Message" }, "description": "Messages" },
+    "/servers/{serverId}/roles/{roleId}": { "schema": { "$ref": "Role" }, "description": "Roles" },
+    "/servers/{serverId}/members/{memberId}": { "schema": { "$ref": "Member" }, "description": "Members" },
+    "/servers/{serverId}/events/{eventId}": { "schema": { "$ref": "Event" }, "description": "Events" }
   }
 }
